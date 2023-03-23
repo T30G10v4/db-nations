@@ -1,4 +1,6 @@
 import java.sql.*;
+import java.util.Locale;
+import java.util.Scanner;
 
 public class Main {
 
@@ -18,19 +20,30 @@ public class Main {
 
     public static void main(String[] args) throws SQLException {
         try (Connection con = DriverManager.getConnection(url, user, password)) {
+
             System.out.println("Collegamento effettuato.");
+
             try (PreparedStatement ps = con.prepareStatement(query)) {
+
                 try (ResultSet rs = ps.executeQuery()) {
 
-                    while(rs.next()) {
+                    Scanner scan = new Scanner(System.in);
+                    System.out.print("Inserisci il nome intero o una sua parte: ");
+                    String result = scan.nextLine();
 
-                        String country = rs.getString(1);
-                        int countryId = rs.getInt(2);
-                        String region = rs.getString(3);
-                        String continent = rs.getString(4);
-                        System.out.println(""+country+" "+countryId+" "+region+" "+continent+".");
+                    while (rs.next()) {
+                        String country = rs.getString(1).toLowerCase(Locale.ROOT);
+
+                        if (country.contains(result)) {
+
+                            country = rs.getString(1);
+                            int countryId = rs.getInt(2);
+                            String region = rs.getString(3);
+                            String continent = rs.getString(4);
+                            System.out.println("" + country + " " + countryId + " " + region + " " + continent + ".");
+                        }
+
                     }
-
                 }
             }
 
