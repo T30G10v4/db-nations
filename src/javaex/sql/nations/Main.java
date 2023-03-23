@@ -17,7 +17,7 @@ public class Main {
             order by c.name asc
             """;
 
-    private final static String queryPlus1 =  """
+    private final static String queryPlus =  """
         select c.name as country,
         c.country_id,
         r.name as region_name,
@@ -25,11 +25,9 @@ public class Main {
         from countries c
         inner join regions r on c.region_id = r.region_id
         inner join continents c2 on c2.continent_id = r.continent_id
-        where c.name like "%""";
-
-    private final static String queryPlus2 =  """
-        %"
+        where c.name like ?
         order by c.name asc""";
+
 
     private final static String query1 = """
             select l.`language` from languages l
@@ -60,16 +58,14 @@ public class Main {
             System.out.print("Inserisci il nome intero o una sua parte: ");
             String result = scan.nextLine();
 
-            String query = queryPlus1+result+queryPlus2;
+            try {
 
-            try (PreparedStatement ps = con.prepareStatement(query)) {
+                PreparedStatement ps = con.prepareStatement(queryPlus);
+                ps.setString(1, "%"+result+"%");
 
                 try (ResultSet rs = ps.executeQuery()) {
 
                     while (rs.next()) {
-
-
-
 
                             String country = rs.getString(1);
                             int countryId = rs.getInt(2);
@@ -81,6 +77,8 @@ public class Main {
                     }
                 }
 
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
 
             System.out.print("Inserisci l'ID di un paese: ");
