@@ -17,6 +17,20 @@ public class Main {
             order by c.name asc
             """;
 
+    private final static String queryPlus1 =  """
+        select c.name as country,
+        c.country_id,
+        r.name as region_name,
+        c2.name as continent_name
+        from countries c
+        inner join regions r on c.region_id = r.region_id
+        inner join continents c2 on c2.continent_id = r.continent_id
+        where c.name like "%""";
+
+    private final static String queryPlus2 =  """
+        %"
+        order by c.name asc""";
+
     private final static String query1 = """
             select l.`language` from languages l
             inner join country_languages cl ON l.language_id = cl.language_id
@@ -43,25 +57,26 @@ public class Main {
 
             System.out.println("Collegamento effettuato.");
 
+            System.out.print("Inserisci il nome intero o una sua parte: ");
+            String result = scan.nextLine();
+
+            String query = queryPlus1+result+queryPlus2;
+
             try (PreparedStatement ps = con.prepareStatement(query)) {
 
                 try (ResultSet rs = ps.executeQuery()) {
 
-
-                    System.out.print("Inserisci il nome intero o una sua parte: ");
-                    String result = scan.nextLine();
-
                     while (rs.next()) {
-                        String country = rs.getString(1).toLowerCase(Locale.ROOT);
 
-                        if (country.contains(result)) {
 
-                            country = rs.getString(1);
+
+
+                            String country = rs.getString(1);
                             int countryId = rs.getInt(2);
                             String region = rs.getString(3);
                             String continent = rs.getString(4);
                             System.out.println("" + country + " " + countryId + " " + region + " " + continent + ".");
-                        }
+
 
                     }
                 }
@@ -71,7 +86,7 @@ public class Main {
             System.out.print("Inserisci l'ID di un paese: ");
             String id = scan.nextLine();
 
-            String result = query1+id;
+            result = query1+id;
 
             try (PreparedStatement ps = con.prepareStatement(result)) {
 
